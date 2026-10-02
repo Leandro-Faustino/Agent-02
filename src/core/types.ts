@@ -151,6 +151,8 @@ export const TenantConfigSchema = z.object({
   persona: PersonaSchema,
   goal: ConversionGoalSchema.default("reuniao"),
   limits: LimitsSchema,
+  /** RF-40 — integração com CRMs externos e avisos ao time (passagem do bastão, alertas). */
+  integrations: z.object({ webhookUrl: z.string().url().optional(), webhookSecret: z.string().optional() }).default({}),
   /** O agente só opera após aprovação do onboarding pelo cliente. */
   approved: z.boolean().default(false),
 });

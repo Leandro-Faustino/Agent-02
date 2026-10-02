@@ -247,3 +247,14 @@ describe("regras de fluxo", () => {
     expect(t.messenger.outbox).toHaveLength(0);
   });
 });
+
+describe("reabertura", () => {
+  it("lead em nutrição que responde volta para a qualificação (RF-23)", async () => {
+    const t = setup(() => ({ reply: ["Que bom ter notícias, Carla. Como está o fechamento do mês aí hoje?"], intent: "responde_pergunta" }), {
+      lead: { stage: "nutricao", flowState: "nutricao", criteria: { encaixe_pic: QUALIFIED.encaixe_pic } },
+    });
+    await t.say("Oi, agora estamos com problema no fechamento");
+    expect(t.lead().stage).toBe("em_conversa");
+    expect(t.lead().flowState).toBe("qualificacao");
+  });
+});

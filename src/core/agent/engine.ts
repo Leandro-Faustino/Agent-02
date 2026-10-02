@@ -84,7 +84,11 @@ export async function handleInbound(deps: Deps, leadId: string, inbound: ChatMes
   if (lead.lastOutboundAt && now.getTime() - new Date(lead.lastOutboundAt).getTime() < 10 * 60000) addSignal(lead, "respondeu_rapido");
   lead.lastInboundAt = now.toISOString();
   lead.unansweredAttempts = 0;
-  if (lead.stage === "prospect") lead.stage = "em_conversa";
+  // Qualquer resposta reabre a conversa (RF-23), inclusive de nutrição ou descarte por fim de ciclo.
+  if (lead.stage === "prospect" || lead.stage === "nutricao" || (lead.stage === "descartado" && !lead.optedOut)) {
+    lead.stage = "em_conversa";
+    lead.discardReason = undefined;
+  }
 
   // RF-26 — opt-out imediato, sem passar pelo modelo.
   if (OPT_OUT_PATTERNS.some((re) => re.test(input))) {
